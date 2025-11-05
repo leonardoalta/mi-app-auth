@@ -1,219 +1,209 @@
-# ✅ Mi App Auth – Login con MFA (Contraseña + OTP) y Passwordless  
+🛡️ Mi App Auth
+Autenticación MFA (Contraseña + OTP) & Passwordless
 
-Monorepo con backend (Spring Boot) y frontend (React + Vite) que implementa autenticación moderna con:
+Bienvenido 👋
+Este es un monorepo full-stack que implementa autenticación moderna usando:
 
-✅ Login tradicional  
-> Correo + contraseña → envío OTP → verificación → acceso  
+✔️ Login tradicional (correo + contraseña + OTP)
 
-✅ Login passwordless  
-> Solo correo → envío OTP → verificación → acceso  
+✔️ Login sin contraseña (passwordless) — solo correo → OTP
 
-✅ Funciones clave
-- Envío de código OTP por correo
-- Verificación de código OTP
-- Reenvío de OTP
-- Control de expiración
-- Doble factor de autenticación (MFA)
-- Flujo passwordless
+✔️ Verificación OTP + reenvío
 
-Este proyecto sirve como base para sistemas que requieran mayor seguridad, sin depender únicamente de contraseñas.  
-Gracias a su enfoque modular, puede extenderse a perfiles de usuario, refresco de tokens, o integración con apps móviles.
+✔️ Control de expiración del código
 
-------------------------------------------------------------
-📁 ESTRUCTURA DEL REPOSITORIO
-------------------------------------------------------------
+Ideal como base para proyectos que requieren seguridad, simplicidad de integración y buena UX.
 
+📂 Estructura del repositorio
 mi-app-auth/
-├── backend/       # API REST con Spring Boot
+├── backend/      # API – Spring Boot
 │   ├── src/
 │   ├── pom.xml
 │   └── ...
-└── frontend/      # UI con React + Vite
+└── frontend/     # UI – React + Vite
     ├── src/
     ├── package.json
     └── ...
 
-------------------------------------------------------------
-🚀 INSTRUCCIONES PARA EJECUTAR
-------------------------------------------------------------
-
-✅ Requisitos
-
-| Componente | Versión |
-|------------|---------|
-| Java       | 17+     |
-| Node       | 22.21.0 (nvm) |
-| PostgreSQL | Requerido |
-| SMTP       | MailHog / Mailtrap |
-
-------------------------------------------------------------
-⚙️ BACKEND (SPRING BOOT)
-------------------------------------------------------------
-
-1) Entrar
+✅ Características principales
+Funcionalidad	Estado
+Registro de usuarios	✅
+Login tradicional (correo + password)	✅
+Envío de OTP al correo	✅
+Verificación OTP	✅
+Login sin contraseña (passwordless)	✅
+Reenvío de OTP	✅
+Control de expiración	✅
+⚙️ Instalación & ejecución
+📌 Requisitos
+Dependencia	Versión
+Java	17+
+Node	22.21.0 (NVM recomendado)
+PostgreSQL	✅
+SMTP	(MailHog, Mailtrap o Gmail)
+🖥️ Backend – Spring Boot
+▶️ Ejecutar backend
 cd backend
-
-2) Ejecutar
 ./mvnw spring-boot:run
 
-El backend queda disponible en:
-http://localhost:8080
 
-------------------------------------------------------------
-⚙️ CONFIGURACIÓN SMTP
-------------------------------------------------------------
+Servirá en:
+
+http://localhost:8080/
+
+⚙️ Configuración de correo (OTP)
 
 Editar:
+
 backend/src/main/resources/application.properties
+
+
+Ejemplo (dev):
 
 app.auth.expose-otp-in-response=true
 app.auth.otp-exp-minutes=5
+app.auth.mail.from=no-reply@local.test
 
-# OPCIÓN 1 – MailHog local
-# spring.mail.host=localhost
-# spring.mail.port=1025
-# spring.mail.properties.mail.smtp.auth=false
-# spring.mail.properties.mail.smtp.starttls.enable=false
-# app.auth.mail.from=no-reply@local.test
+Opciones
+✅ MailHog (local)
+spring.mail.host=localhost
+spring.mail.port=1025
+spring.mail.properties.mail.smtp.auth=false
+spring.mail.properties.mail.smtp.starttls.enable=false
 
-# OPCIÓN 2 – Mailtrap
-# spring.mail.host=sandbox.smtp.mailtrap.io
-# spring.mail.port=2525
-# spring.mail.username=TU_USER
-# spring.mail.password=TU_PASS
-# spring.mail.properties.mail.smtp.auth=true
-# spring.mail.properties.mail.smtp.starttls.enable=true
-# app.auth.mail.from=no-reply@miapp.com
+✅ Mailtrap
+spring.mail.host=sandbox.smtp.mailtrap.io
+spring.mail.port=2525
+spring.mail.username=TU_USER
+spring.mail.password=TU_PASS
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
 
-⚠️ NOTA PRODUCTION:
-No exponer OTP:
+
+⚠️ En producción
 app.auth.expose-otp-in-response=false
 
-------------------------------------------------------------
-💻 FRONTEND (REACT + VITE)
-------------------------------------------------------------
-
-1) Entrar
+💻 Frontend – React + Vite
+▶️ Ejecutar frontend
 cd frontend
-
-2) Seleccionar nodo
 nvm use
-
-3) Instalar
 npm install
-
-4) Ejecutar
 npm run dev
 
-Frontend disponible en:
-http://localhost:5173
 
-------------------------------------------------------------
-🔐 FLUJO DE LOGIN TRADICIONAL (CONTRASEÑA + OTP)
-------------------------------------------------------------
+Disponible en:
 
-1) Registrar usuario
+http://localhost:5173/
 
+🔐 Flujo: Login con contraseña ➜ OTP
+✅ 1) Registrar usuario
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "firstName": "Ana",
-    "lastName": "Lopez",
-    "email": "ana@example.com",
-    "password": "Secret.123"
+    "firstName":"Ana",
+    "lastName":"Lopez",
+    "email":"ana@example.com",
+    "password":"Secret.123"
   }'
 
-2) Login → genera OTP
-
+✅ 2) Login → genera OTP
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "ana@example.com",
-    "password": "Secret.123",
-    "device": "Chrome/Linux"
+    "email":"ana@example.com",
+    "password":"Secret.123",
+    "device":"Chrome/Linux"
   }'
 
-Respuesta (DEV):
+
+Ejemplo (dev):
+
 {
   "message": "First factor OK. OTP sent to email.",
   "otp_demo": 123456,
   "valid_minutes": 5
 }
 
-3) Verificar OTP
-
+✅ 3) Verificar OTP
 curl -X POST http://localhost:8080/api/auth/otp/verify \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "ana@example.com",
-    "code": 123456
+    "email":"ana@example.com",
+    "code":123456
   }'
 
-✅ Respuesta:
-Inicio de sesión completado
 
-------------------------------------------------------------
-🔐 LOGIN PASSWORDLESS (SIN CONTRASEÑA)
-------------------------------------------------------------
+Respuesta:
 
-1) Solicitar OTP solo con email
+{
+  "authenticated": true,
+  "message": "MFA completed"
+}
 
+🔐 Flujo: Login Passwordless (solo correo)
+✅ 1) Solicitar OTP
 curl -X POST http://localhost:8080/api/auth/otp/request \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "ana@example.com",
-    "device": "Chrome/Linux"
+    "email":"ana@example.com",
+    "device":"Chrome/Linux"
   }'
 
-Respuesta (DEV):
+
+Ejemplo (dev):
+
 {
-  "message": "OTP sent to email.",
-  "otp_demo": 654321,
+  "message": "OTP sent to email",
   "valid_minutes": 5
 }
 
-2) Verificar OTP
+✅ 2) Verificar OTP
 
-curl -X POST http://localhost:8080/api/auth/otp/verify \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "ana@example.com",
-    "code": 654321
-  }'
+Mismo paso del login tradicional
 
-✅ Resultado:
-Inicio de sesión completado
+✅ UX — Mensajes visibles
+Acción	Mensaje
+Login correcto	OTP enviado
+OTP validado	Inicio de sesión exitoso
+OTP incorrecto	Código incorrecto
+OTP expirado	Código expirado
+Reenvío	Código reenviado
+🔒 Seguridad implementada
 
-------------------------------------------------------------
-✅ MENSAJES EN UI
-------------------------------------------------------------
-
-| Acción | Mensaje |
-|--------|--------|
-| Login correcto | OTP enviado |
-| OTP correcto | Inicio de sesión exitoso |
-| OTP incorrecto | Código incorrecto |
-| OTP expirado | Código expirado |
-| Reenvío | Código reenviado |
-
-------------------------------------------------------------
-🔒 SEGURIDAD IMPLEMENTADA
-------------------------------------------------------------
-
-✅ MFA (contraseña + OTP)  
-✅ Passwordless  
-✅ Control de expiración  
-✅ Prevención de user enumeration  
-✅ Reenvío OTP  
-✅ Logs  
+✅ MFA
+✅ Passwordless
+✅ Expiración OTP
+✅ Repositorio seguro
+✅ BCrypt password
+✅ Reenvío OTP
 ✅ SMTP
+✅ DTOs seguros
 
-⚠️ En producción desactivar:
-app.auth.expose-otp-in-response=true
+⚠️ En producción:
 
-------------------------------------------------------------
-📄 LICENCIA
-------------------------------------------------------------
+No exponer OTP: app.auth.expose-otp-in-response=false
+
+📦 Commits (Conventional Commits)
+
+Ejemplos aplicados:
+
+feat(auth-backend): agrega endpoints OTP y login
+fix(ux): mejora mensajes de verificación
+docs(readme): agrega documentación principal
+chore(repo): configura estructura monorepo
+
+🏁 Roadmap (Sugerencias)
+
+Refresh Token
+
+Roles y permisos
+
+Recuperar contraseña
+
+JWT
+
+Auditoría
+
+📄 Licencia
 
 MIT
-
