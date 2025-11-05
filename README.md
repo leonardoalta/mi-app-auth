@@ -1,77 +1,76 @@
-🛡️ Mi App Auth
-Autenticación MFA (Contraseña + OTP) & Passwordless
+# Mi App Auth
+Autenticación MFA (contraseña + OTP) y passwordless
 
-Bienvenido 👋
-Este es un monorepo full-stack que implementa autenticación moderna usando:
+Este proyecto es un monorepositorio que implementa un sistema moderno de autenticación utilizando Spring Boot (backend) y React + Vite (frontend).
+Permite autenticación tradicional mediante correo y contraseña usando OTP como segundo factor (MFA), así como inicio de sesión sin contraseña (passwordless) utilizando solamente el correo electrónico.
 
-✔️ Login tradicional (correo + contraseña + OTP)
+----------------------------------------------------------------
+1. ESTRUCTURA DEL REPOSITORIO
+----------------------------------------------------------------
 
-✔️ Login sin contraseña (passwordless) — solo correo → OTP
-
-✔️ Verificación OTP + reenvío
-
-✔️ Control de expiración del código
-
-Ideal como base para proyectos que requieren seguridad, simplicidad de integración y buena UX.
-
-📂 Estructura del repositorio
 mi-app-auth/
-├── backend/      # API – Spring Boot
-│   ├── src/
-│   ├── pom.xml
-│   └── ...
-└── frontend/     # UI – React + Vite
-    ├── src/
-    ├── package.json
-    └── ...
+├── backend/        → API REST (Spring Boot)
+└── frontend/       → Cliente web (React + Vite)
 
-✅ Características principales
-Funcionalidad	Estado
-Registro de usuarios	✅
-Login tradicional (correo + password)	✅
-Envío de OTP al correo	✅
-Verificación OTP	✅
-Login sin contraseña (passwordless)	✅
-Reenvío de OTP	✅
-Control de expiración	✅
-⚙️ Instalación & ejecución
-📌 Requisitos
-Dependencia	Versión
-Java	17+
-Node	22.21.0 (NVM recomendado)
-PostgreSQL	✅
-SMTP	(MailHog, Mailtrap o Gmail)
-🖥️ Backend – Spring Boot
-▶️ Ejecutar backend
+
+----------------------------------------------------------------
+2. FUNCIONALIDADES PRINCIPALES
+----------------------------------------------------------------
+
+Registro de usuarios
+Login tradicional (correo + contraseña + OTP)
+Login sin contraseña (passwordless)
+Envío de código OTP a correo
+Verificación de OTP
+Reenvío de OTP
+Control de expiración OTP
+
+
+----------------------------------------------------------------
+3. REQUISITOS
+----------------------------------------------------------------
+
+Java 17+
+Node 22.21.0 (usando NVM)
+PostgreSQL (cualquier versión compatible)
+SMTP disponible (MailHog o Mailtrap)
+
+
+----------------------------------------------------------------
+4. BACKEND - SPRING BOOT
+----------------------------------------------------------------
+
+1) Entrar al directorio backend:
 cd backend
+
+2) Ejecutar aplicación:
 ./mvnw spring-boot:run
 
+Backend disponible en:
+http://localhost:8080
 
-Servirá en:
 
-http://localhost:8080/
+----------------------------------------------------------------
+4.1 Configuración de correo para OTP
+----------------------------------------------------------------
 
-⚙️ Configuración de correo (OTP)
-
-Editar:
-
+Editar archivo:
 backend/src/main/resources/application.properties
 
-
-Ejemplo (dev):
+Ejemplo configuración desarrollo:
 
 app.auth.expose-otp-in-response=true
 app.auth.otp-exp-minutes=5
 app.auth.mail.from=no-reply@local.test
 
-Opciones
-✅ MailHog (local)
+
+MailHog:
 spring.mail.host=localhost
 spring.mail.port=1025
 spring.mail.properties.mail.smtp.auth=false
 spring.mail.properties.mail.smtp.starttls.enable=false
 
-✅ Mailtrap
+Mailtrap:
 spring.mail.host=sandbox.smtp.mailtrap.io
 spring.mail.port=2525
 spring.mail.username=TU_USER
@@ -79,24 +78,36 @@ spring.mail.password=TU_PASS
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 
-
-⚠️ En producción
+Producción:
 app.auth.expose-otp-in-response=false
 
-💻 Frontend – React + Vite
-▶️ Ejecutar frontend
+
+----------------------------------------------------------------
+5. FRONTEND - REACT + VITE
+----------------------------------------------------------------
+
+1) Entrar al directorio:
 cd frontend
+
+2) Seleccionar Node:
 nvm use
+
+3) Instalar dependencias:
 npm install
+
+4) Ejecutar servidor desarrollo:
 npm run dev
 
+Frontend disponible en:
+http://localhost:5173
 
-Disponible en:
 
-http://localhost:5173/
+----------------------------------------------------------------
+6. FLUJO DE AUTENTICACIÓN
+----------------------------------------------------------------
 
-🔐 Flujo: Login con contraseña ➜ OTP
-✅ 1) Registrar usuario
+6.1 Registro de usuario
+
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
@@ -106,7 +117,11 @@ curl -X POST http://localhost:8080/api/auth/register \
     "password":"Secret.123"
   }'
 
-✅ 2) Login → genera OTP
+
+6.2 Login (correo + contraseña + OTP)
+
+1) Login que genera OTP
+
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
@@ -115,8 +130,7 @@ curl -X POST http://localhost:8080/api/auth/login \
     "device":"Chrome/Linux"
   }'
 
-
-Ejemplo (dev):
+Respuesta ejemplo (desarrollo):
 
 {
   "message": "First factor OK. OTP sent to email.",
@@ -124,7 +138,9 @@ Ejemplo (dev):
   "valid_minutes": 5
 }
 
-✅ 3) Verificar OTP
+
+2) Validar OTP
+
 curl -X POST http://localhost:8080/api/auth/otp/verify \
   -H "Content-Type: application/json" \
   -d '{
@@ -133,15 +149,10 @@ curl -X POST http://localhost:8080/api/auth/otp/verify \
   }'
 
 
-Respuesta:
+6.3 Login sin contraseña (Passwordless)
 
-{
-  "authenticated": true,
-  "message": "MFA completed"
-}
+1) Solicitar OTP
 
-🔐 Flujo: Login Passwordless (solo correo)
-✅ 1) Solicitar OTP
 curl -X POST http://localhost:8080/api/auth/otp/request \
   -H "Content-Type: application/json" \
   -d '{
@@ -149,41 +160,40 @@ curl -X POST http://localhost:8080/api/auth/otp/request \
     "device":"Chrome/Linux"
   }'
 
+2) Validar OTP
+(Mismo endpoint que el flujo anterior)
 
-Ejemplo (dev):
 
-{
-  "message": "OTP sent to email",
-  "valid_minutes": 5
-}
+----------------------------------------------------------------
+7. MENSAJES DE LA INTERFAZ
+----------------------------------------------------------------
 
-✅ 2) Verificar OTP
+Login correcto → OTP enviado
+OTP correcto → Inicio de sesión correcto
+OTP incorrecto → Código incorrecto
+OTP expirado → Código expirado
+Reenvío OTP → Nuevo código enviado
 
-Mismo paso del login tradicional
 
-✅ UX — Mensajes visibles
-Acción	Mensaje
-Login correcto	OTP enviado
-OTP validado	Inicio de sesión exitoso
-OTP incorrecto	Código incorrecto
-OTP expirado	Código expirado
-Reenvío	Código reenviado
-🔒 Seguridad implementada
+----------------------------------------------------------------
+8. SEGURIDAD IMPLEMENTADA
+----------------------------------------------------------------
 
-✅ MFA
-✅ Passwordless
-✅ Expiración OTP
-✅ Repositorio seguro
-✅ BCrypt password
-✅ Reenvío OTP
-✅ SMTP
-✅ DTOs seguros
+Autenticación MFA
+Login passwordless
+Expiración temporal de OTP
+Contraseñas con hash BCrypt
+Reenvío OTP
+SMTP
+DTOs seguros
 
-⚠️ En producción:
+Recomendación producción:
+app.auth.expose-otp-in-response=false
 
-No exponer OTP: app.auth.expose-otp-in-response=false
 
-📦 Commits (Conventional Commits)
+----------------------------------------------------------------
+9. COMMITS - CONVENTIONAL COMMITS
+----------------------------------------------------------------
 
 Ejemplos aplicados:
 
@@ -192,18 +202,28 @@ fix(ux): mejora mensajes de verificación
 docs(readme): agrega documentación principal
 chore(repo): configura estructura monorepo
 
-🏁 Roadmap (Sugerencias)
+
+----------------------------------------------------------------
+10. ROADMAP (SUGERENCIAS FUTURAS)
+----------------------------------------------------------------
 
 Refresh Token
-
 Roles y permisos
-
-Recuperar contraseña
-
+Recuperación de contraseña
 JWT
+Auditoría / Logs avanzados
 
-Auditoría
 
-📄 Licencia
+----------------------------------------------------------------
+11. LICENCIA
+----------------------------------------------------------------
 
 MIT
+
+
+----------------------------------------------------------------
+12. AUTOR
+----------------------------------------------------------------
+
+Proyecto orientado a aprendizaje y práctica de autenticación moderna (MFA + passwordless)
+
